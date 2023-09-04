@@ -1,6 +1,7 @@
 # depslib dependency file v1.0
-1693849471 source:c:\users\hajra\desktop\programme\c\mastermind\main.c
+1693859575 source:c:\users\hajra\desktop\programme\c\mastermind\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
+	<math.h>
 

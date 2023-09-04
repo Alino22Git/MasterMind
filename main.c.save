@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 void outputInfo() {
     printf("-----------------------------\n          Mastermind\n-----------------------------\nHow to play:\n1)Enter a lenght\n2)Guess the number\n3)Win the game!\nLegend:\n*=Correct position\n~=Position Incorrect (Number exists)\n_=Number does not exist\n\n");
 }
 int inputLengthOfMN();
+void arrayContainsNumber(generatedNumber,mysteryNumber,len);
 void gameAlgorithm(int len,int* mysteryNum);
 void genNumber(int* mysteryNumber,int len);
 void startGame();
@@ -25,7 +27,6 @@ void startGame() {
     gameAlgorithm(len, mysteryNumber);
 }
 int inputLengthOfMN() {
-
     int erg;
     printf("Length of the mystery number:");
     scanf("%d",&erg);
@@ -38,18 +39,32 @@ void genNumber(int* mysteryNumber,int len) {
     }
     int x=0;
     do {
-        int generator=rand()%10;
-//        if(!arrayContainsNum(mysteryNumber,generator,len)) {
-        mysteryNumber[x]=generator;
+        int generatedNumber=rand()%10;
+        arrayContainsNumber(generatedNumber,mysteryNumber,len);
+        mysteryNumber[x]=generatedNumber;
         x++;
     } while(x!=len);
+
 }
 
 void gameAlgorithm(int len,int* mysteryNum) {
+
     int correct=0;
     int guessedNumber[len];
+     for (int i = 0; i < len ; i++) {
+        guessedNumber[i] = 10;
+    }
     int tries=len*2;
     do {
+            //    printf("Mystery Number:");
+//    for (int i = 0; i < len ; i++) {
+//            printf("%d",mysteryNum[i]);
+//    }
+//    printf("\nGuessed Number:");
+//        for (int i = 0; i < len ; i++) {
+//            printf("%d",guessedNumber[i]);
+//    }
+//    printf("\n");
         correct=printStatus(mysteryNum,guessedNumber,len);
         guessNumber(guessedNumber,len);
     } while(correct==0&&tries!=0);
@@ -85,8 +100,12 @@ int printStatus(int* mn,int* gn,int len) {
 }
 void guessNumber(int* guessedNumber,int len) {
     int guess=0;
+    int begin=len-1;
 printf("\nGuess:");
 scanf("%d",&guess);
-printf("%d,%d,%d,%d",guess/100,guess/10%10,guess/10%100,guess%1000);
-printf("%d,%d,%d,%d",guess/1000,guess/10%10,guess/10%10,guess%10);
+//printf("%d,%d,%d,%d",guess/1000%10,guess/100%10,guess/10%10,guess%10);
+for(int i=0;i<len;i++){
+    guessedNumber[i]=(int)(guess/pow(10,begin)) % 10;
+    begin--;
+    }
 }
