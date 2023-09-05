@@ -55,11 +55,9 @@ void genNumber(int* mysteryNumber,int len) {
         flag=arrayContainsNumber(generatedNumber,mysteryNumber,x);
         if(flag) {
             mysteryNumber[x]=generatedNumber;
-                    printf("%d" ,mysteryNumber[x]);
             x++;
         }
     } while(x!=len);
-printf("\n");
 }
 
 void gameAlgorithm(int len,int* mysteryNum) {
@@ -80,13 +78,6 @@ int printStatus(int* mn,int* gn,int len) {
     int x=0;
     int exist=0;
     int correct=0;
-    for(int i=0;i<len;i++){
-        printf("%d",mn[i]);
-    }
-    printf("\n");
-        for(int i=0;i<len;i++){
-        printf("%d",gn[i]);
-    }
     do {
         exist=0;
         if(mn[x]==gn[x]) {
@@ -115,15 +106,12 @@ int printStatus(int* mn,int* gn,int len) {
 void guessNumber(int* guessedNumber,int len) {
     int guess=0,error=0,containsZero=0;
     int begin=len-1;
-    char stringGuess[6];
+    char stringGuess[20];
     do {
 start:
         printf("Guess:\n");
         scanf("%d",&guess);
-        int guess2=0;
-        printf("UNO: %d\n", guess);
         sprintf(stringGuess,"%d",guess);
-        printf("DOS: %d\n", guess);
         error=1;
         containsZero=0;
         if(len!=strlen(stringGuess)) {
@@ -142,9 +130,7 @@ start:
         }
 
     } while(error==0);
-    printf("GUESS: %d\n",guess);
     for(int i=0; i<len; i++) {
-            printf("POW: %d\n",(int)(guess/pow(10,begin)));
         guessedNumber[i]=(int)(guess/pow(10,begin)) % 10;
         begin--;
     }
