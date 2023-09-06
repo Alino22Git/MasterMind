@@ -7,17 +7,17 @@
 void outputInfo() {
     printf("-----------------------------\n          Mastermind\n-----------------------------\nHow to play:\n1)Enter a lenght\n2)Guess the number\n3)Win the game!\nLegend:\n*=Correct position\n~=Position Incorrect (Number exists)\n_=Number does not exist\n\n");
 }
-//Explizite Funktionsaufrufe
+//Explicit Function-Calls
 int inputLengthOfMN();
 void endGame(int win, int tries);
 int arrayContainsNumber(int num,int* mn,int len);
-void gameAlgorithm(int len,int* mysteryNum);
+void gameAlgorithm(int* mysteryNum,int len);
 void genNumber(int* mysteryNumber,int len);
 void startGame();
 int printStatus(int* mysteryNumber,int* guessedNumber,int len);
 void guessNumber(int* guessedNumber,int len);
 
-//Main-Funktion
+//Main-Function
 int main(void) {
     startGame();
     return 0;
@@ -25,24 +25,25 @@ int main(void) {
 /*//-------------------------------------------------------------------------------
 //Parameter:        -
 //Return Value:     -
-//Function:         Controlls the game
+//Function:         Controls the game
 *///-------------------------------------------------------------------------------
 void startGame() {
     outputInfo();
     int len=inputLengthOfMN();
     int mysteryNumber[len];
     genNumber(mysteryNumber,len);
-    gameAlgorithm(len, mysteryNumber);
+    gameAlgorithm(mysteryNumber,len);
 }
 /*//-------------------------------------------------------------------------------
 //Parameter:        -
-//Return Value:     -
+//Return Value:     Length of the mystery number
 //Function:         Requests a length of the mystery number
 *///-------------------------------------------------------------------------------
 int inputLengthOfMN() {
     int erg=0,error=0;
     do {
         printf("Length of the mystery number:");
+        fflush(stdin); //Flush buffer (ex. letters)
         scanf("%d",&erg);
         error=1;
         if(erg>9||erg<1) {
@@ -54,7 +55,7 @@ int inputLengthOfMN() {
     return erg;
 }
 /*//-------------------------------------------------------------------------------
-//Parameter:        -
+//Parameter:        Pointer to the mystery number, length of the mystery number
 //Return Value:     -
 //Function:         Generates a random mystery number
 *///-------------------------------------------------------------------------------
@@ -76,11 +77,11 @@ void genNumber(int* mysteryNumber,int len) {
     } while(x!=len);
 }
 /*//-------------------------------------------------------------------------------
-//Parameter:        -
+//Parameter:        Pointer to the mystery number, length of the mystery number
 //Return Value:     -
-//Function:         Length of the Mystery number, Pointer to the mystery number
+//Function:         Controls the gameloop
 *///-------------------------------------------------------------------------------
-void gameAlgorithm(int len,int* mysteryNum) {
+void gameAlgorithm(int* mysteryNum,int len) {
     int correct=0;
     int guessedNumber[len];
     for (int i = 0; i < len ; i++) {
@@ -95,9 +96,9 @@ void gameAlgorithm(int len,int* mysteryNum) {
     endGame(correct,tries);
 }
 /*//-------------------------------------------------------------------------------
-//Parameter:        -
-//Return Value:     -
-//Function:         Controlls the game
+//Parameter:        Pointer to the mystery number, pointer to the guessed number, length of the mystery number
+//Return Value:     Returns 1 if the player guessed the number (else 0)
+//Function:         Prints the progress of the guesses
 *///-------------------------------------------------------------------------------
 int printStatus(int* mn,int* gn,int len) {
     int x=0;
@@ -128,40 +129,46 @@ int printStatus(int* mn,int* gn,int len) {
     }
     return 0;
 }
+/*//-------------------------------------------------------------------------------
+//Parameter:        Pointer to the guessed number, length of the mystery number
+//Return Value:     -
+//Function:         Requests a guess from the player
+*///-------------------------------------------------------------------------------
 void guessNumber(int* guessedNumber,int len) {
     int guess=0;
     int begin=len-1;
     char stringGuess[20];
     int contains2Numbers=0;
 start:
-        printf("Guess:\n");
-        scanf("%d",&guess);
-        sprintf(stringGuess,"%d",guess);
+    printf("Guess:\n");
+    fflush(stdin); //flush buffer (ex. letters)
+    scanf("%d",&guess);
+    sprintf(stringGuess,"%d",guess); //int -> String
 
-        if(len!=strlen(stringGuess)) {
-            printf("Guess needs to be as long as the mystery number!\n");
-            goto start;
-        }
+    if(len!=strlen(stringGuess)) {
+        printf("Guess needs to be as long as the mystery number!\n");
+        goto start; //goes back to start 142
+    }
 
-        for(int i=0; i<strlen(stringGuess); i++) {
-            contains2Numbers=0;
-            for(int x=0; x<strlen(stringGuess); x++) {
-                if(stringGuess[i]==stringGuess[x]) {
-                    contains2Numbers++;
-                }
-                if(contains2Numbers==2) {
-                    printf("Guess needs to contain distinct numbers!\n");
-                    goto start;
-                }
+    for(int i=0; i<strlen(stringGuess); i++) {
+        contains2Numbers=0;
+        for(int x=0; x<strlen(stringGuess); x++) {
+            if(stringGuess[i]==stringGuess[x]) {
+                contains2Numbers++;
             }
-        }
-
-        for(int i=0; i<strlen(stringGuess); i++) {
-            if(stringGuess[i]=='0') { //führende Null standardmäßig ignoriert. Dies liegt daran, dass in C führende Nullen in Integer-Literalen als Präfix verwendet werden, um Zahlen als Oktalzahlen (Basis 8) zu interpretieren.
-                printf("Guess is not allowed to contain 0!\n");
+            if(contains2Numbers==2) { //if a number appears more than one time in the array
+                printf("Guess needs to contain distinct numbers!\n");
                 goto start;
             }
         }
+    }
+
+    for(int i=0; i<strlen(stringGuess); i++) {
+        if(stringGuess[i]=='0') { //führende Null standardmäßig ignoriert. Dies liegt daran, dass in C führende Nullen in Integer-Literalen als Präfix verwendet werden, um Zahlen als Oktalzahlen (Basis 8) zu interpretieren.
+            printf("Guess is not allowed to contain 0!\n");
+            goto start;
+        }
+    }
 
 
     for(int i=0; i<len; i++) {
@@ -170,6 +177,11 @@ start:
     }
 
 }
+/*//-------------------------------------------------------------------------------
+//Parameter:        Generated number, pointer to the guessed number, length of the mystery number
+//Return Value:     1 for true else 0
+//Function:         Tests the generated number of distinct numbers
+*///-------------------------------------------------------------------------------
 int arrayContainsNumber(int num,int* mn,int len) {
     int exist=0;
     for(int i=0; i<len; i++) {
@@ -182,6 +194,11 @@ int arrayContainsNumber(int num,int* mn,int len) {
     }
     return 0;
 }
+/*//-------------------------------------------------------------------------------
+//Parameter:        Integer decide the outcome (win/lose), number of tries
+//Return Value:     -
+//Function:         Prints the outcome of the game
+*///-------------------------------------------------------------------------------
 void endGame(int win,int tries) {
     if(win) {
         printf("Tries left: %d\nYou have won!",tries);
